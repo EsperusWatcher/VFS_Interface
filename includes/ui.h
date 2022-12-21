@@ -7,7 +7,8 @@ namespace Interface
 {
     void PrintMenu(int fileCounter);
     int ReadCommand();
-    const char *ReadString();
+    std::string ReadString();
 }
+
 
 #endif

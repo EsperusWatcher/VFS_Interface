@@ -1,6 +1,6 @@
 #ifndef OUTPUT
 #define OUTPUT
 
-#include <iostream>
+#include <iostream> 
 
 #endif

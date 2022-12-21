@@ -2,17 +2,20 @@
 #define IVFS_H
 
 #include <fstream>
+#include <filesystem>
 #include <string.h>
 
 #define MAX_FILES 10 // Одновременно открытых
+#define WRITEONLY 0
+#define READONLY 1
 
 namespace TestTask
 {
-    // Вы имеете право как угодно задать содержимое этой структуры
+    // Вы имеете право как угодно задать содержимое этой структуры 
     struct File
     {
         std::fstream fileHook; // Доступ к файлу
-        std::ios_base::openmode fileMode; // Режим доступа к файлу 
+        int fileMode; // Режим доступа к файлу 
 
         char* filePath;
 
@@ -39,6 +42,8 @@ namespace TestTask
         void Close( File *f ); 
     };
 
+    File *ChooseFile(File **openedFiles, int fileCounter);
 }
+
 
 #endif
