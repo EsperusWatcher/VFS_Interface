@@ -41,8 +41,6 @@ namespace TestTask
         // Закрыть файл
         void Close( File *f ); 
     };
-
-    File *ChooseFile(File **openedFiles, int fileCounter);
 }
 
 
