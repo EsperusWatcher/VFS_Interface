@@ -158,7 +158,6 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
                 if (fileCounter > 0)
                 {
                     char buff[MAX_BUFFER];
-                    std::cout << "2\n";
                     size_t readBytes = MAX_BUFFER;
                     readBytes = (*IVFS_handler)->Read(Interface::ChooseFile(openedFiles, fileCounter), buff, readBytes);
                     std::cout << "Bytes read: " << readBytes << "\n";
