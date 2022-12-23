@@ -19,9 +19,9 @@ TestTask::File::File (const char *filePath, std::ios_base::openmode fileMode)
 // name - путь к файлу
 TestTask::File* TestTask::IVFS::Open ( const char *name )
 {
-    std::fstream fileHook(name);
+    std::fstream testHook(name);
     // Файл найден
-    if (fileHook) 
+    if (testHook) 
         return new TestTask::File(name, std::ios::in);
     // Такого файла нет
     else 
@@ -94,18 +94,14 @@ size_t TestTask::IVFS::Read ( TestTask::File *f, char *buff, size_t len )
     std::cout << "Reading: " << f->filePath << " |\n";
 
     size_t readData = 0;
-    while (f->fileHook)
-    {
-        // Посимвольно проходит по содержимому файла, считает байты (символы)
-        f->fileHook.get();
-        readData++;
-    }
+    
+    f->fileHook.get(buff, len, EOF);
 
     // Возвращение потока в начало файла для будущего доступа
     f->fileHook.clear();
     f->fileHook.seekg(0);
 
-    return readData;
+    return strlen(buff);
 }
 
 // Записывает данные в файл, возвращает сколько байт удалось записать

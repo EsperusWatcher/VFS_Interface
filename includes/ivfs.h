@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define MAX_FILES 10 // Одновременно открытых
+#define MAX_BUFFER 255 // Для чтения/записи данных
 #define WRITEONLY 0
 #define READONLY 1
 

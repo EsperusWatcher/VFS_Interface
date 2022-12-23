@@ -115,13 +115,11 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
             case 3:
                 if (fileCounter > 0)
                 {
-                    // ??? Я не знаю к чему тут буфер и его(?) размер
-                    char buff[255];
+                    char buff[MAX_BUFFER];
                     std::cout << "2\n";
-                    size_t readBytes;
+                    size_t readBytes = MAX_BUFFER;
                     readBytes = (*IVFS_handler)->Read(Interface::ChooseFile(openedFiles, fileCounter), buff, readBytes);
                     std::cout << "Bytes read: " << readBytes << "\n";
-                    //delete buff;
                 }
                 else
                     std::cout << "No opened files\n";
@@ -131,12 +129,10 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
             case 4:
                 if (fileCounter > 0)
                 {
-                    // ??? Я не знаю к чему тут буфер и его(?) размер
-                    char buff[255];
+                    char buff[MAX_BUFFER];
                     size_t writeBytes;
                     writeBytes = (*IVFS_handler)->Write(Interface::ChooseFile(openedFiles, fileCounter), buff, writeBytes);
                     std::cout << "Wrote bytes: " << writeBytes << "\n";
-                    //delete buff;
                 }
                 else
                     std::cout << "No opened files\n";
