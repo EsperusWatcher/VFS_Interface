@@ -86,32 +86,74 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
         Interface::PrintMenu(fileCounter);
         switch(Interface::ReadCommand())
         {
+            // Открыть файл
             case 1:
                 if (fileCounter < MAX_FILES)
                 {
-                    Interface::FilePathPrompt();
-                    openedFiles[fileCounter] = (*IVFS_handler)->Open(Interface::ReadString().c_str());
 
-                    if (openedFiles[fileCounter] != nullptr)
-                        fileCounter++;
+                    bool checkPassed = true;
+
+                    Interface::FilePathPrompt();
+                    std::string fileToOpen = Interface::ReadString();
+
+                    // Проверяет, открыт ли уже этот файл во writeonly режиме
+                    for (int i = 0; i < fileCounter; i++)
+                    {
+                        std::string toCompare(openedFiles[i]->filePath);
+                        if (fileToOpen.compare(toCompare) == 0 && openedFiles[i]->fileMode == WRITEONLY)
+                        {
+                            std::cout << "File already opened in writeonly mode\n";
+                            checkPassed = false;
+                            break;
+                        }
+                    }
+
+                    if (checkPassed)
+                    {
+                        openedFiles[fileCounter] = (*IVFS_handler)->Open(fileToOpen.c_str());
+
+                        if (openedFiles[fileCounter] != nullptr)
+                            fileCounter++;
+                    }
                 }
                 else
                     std::cout << "Max amount of opened files reached\n";
                 break;
             
+            // Создать файл
             case 2:
                 if (fileCounter < MAX_FILES)
                 {
+                    bool checkPassed = true;
+
                     Interface::FilePathPrompt();
-                    openedFiles[fileCounter] = (*IVFS_handler)->Create(Interface::ReadString().c_str());
+                    std::string fileToCreate = Interface::ReadString();
                     
-                    if (openedFiles[fileCounter] != nullptr)
-                        fileCounter++;
+                    // Проверяет, открыт ли уже этот файл в readonly режиме
+                    for (int i = 0; i < fileCounter; i++)
+                    {
+                        std::string toCompare(openedFiles[i]->filePath);
+                        if (fileToCreate.compare(toCompare) == 0 && openedFiles[i]->fileMode == READONLY)
+                        {
+                            std::cout << "File already opened in readonly mode\n";
+                            checkPassed = false;
+                            break;
+                        }
+                    }
+
+                    if (checkPassed)
+                    {
+                        openedFiles[fileCounter] = (*IVFS_handler)->Create(fileToCreate.c_str());
+
+                        if (openedFiles[fileCounter] != nullptr)
+                            fileCounter++;
+                    }
                 }
                 else
                     std::cout << "Max amount of opened files reached\n";
                 break;
 
+            // Прочитать файл
             case 3:
                 if (fileCounter > 0)
                 {
@@ -126,6 +168,7 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
                 
                 break;
 
+            // Записать в файл
             case 4:
                 if (fileCounter > 0)
                 {
@@ -139,6 +182,7 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
 
                 break;
 
+            // Закрыть файл
             case 5:
                 if (fileCounter > 0)
                 {
@@ -166,6 +210,7 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
 
                 break;
 
+            // Выйти из программы
             case 7:
                 toExit = true;
                 break;
