@@ -7,7 +7,7 @@
 TestTask::File::File (const char *filePath, std::ios_base::openmode fileMode)
 {
     this->fileHook.open(filePath, fileMode);
-    this->fileMode = fileMode == std::fstream::in ? READONLY : WRITEONLY;
+    this->fileMode = fileMode == std::ios::in ? READONLY : WRITEONLY;
     this->filePath = new char(strlen(filePath));
 
     strcpy(this->filePath, filePath);
@@ -22,7 +22,7 @@ TestTask::File* TestTask::IVFS::Open ( const char *name )
     std::fstream fileHook(name);
     // Файл найден
     if (fileHook) 
-        return new TestTask::File(name, std::fstream::in);
+        return new TestTask::File(name, std::ios::in);
     // Такого файла нет
     else 
     {
@@ -32,6 +32,7 @@ TestTask::File* TestTask::IVFS::Open ( const char *name )
 
     // Файл открыт во writeonly режиме
     // TODO: Добавить проверку на writeonly
+    // ???
 }
 
 // Открыть или создать файл в writeonly режиме. Если нужно, то создать все нужные поддиректории, упомянутые в пути. 
@@ -74,7 +75,7 @@ TestTask::File* TestTask::IVFS::Create ( const char *name )
     // TODO: Добавить проверку на readonly
     //return nullptr;
 
-    return new TestTask::File(name, std::fstream::out);
+    return new TestTask::File(name, std::ios::out);
 
 }
 
@@ -117,9 +118,13 @@ size_t TestTask::IVFS::Write (TestTask::File *f, char *buff, size_t len)
         std::cout << "File cant be written\n";
         return 0;
     }
+    
+    std::cout << "Input: "; 
+    strcpy(buff, Interface::ReadString().c_str());
 
-    std::cout << "Writing: " << f->filePath << " |\n";
-    return 0;
+    f->fileHook << buff;
+
+    return strlen(buff);
 }
 
 // Закрывает файл, очищает память

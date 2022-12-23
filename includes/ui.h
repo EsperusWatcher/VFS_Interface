@@ -7,6 +7,7 @@
 namespace Interface
 {
     void PrintMenu(int fileCounter);
+    void FilePathPrompt();
     int ReadCommand();
     std::string ReadString();
     void RearrangeFileDisplay(TestTask::File **openedFiles, int fileCounter);

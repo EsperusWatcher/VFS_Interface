@@ -15,6 +15,13 @@ void Interface::PrintMenu(int fileCounter)
     std::cout << "Choose: ";
 }
 
+void Interface::FilePathPrompt()
+{
+    std::cout << "---------------------------- \n";
+    std::cout << "Format: 'a/b/c/.../file.txt' \n";
+    std::cout << "Enter File Path: ";
+}
+
 int Interface::ReadCommand()
 {
     int ret = getchar() - '0'; 
@@ -25,11 +32,7 @@ int Interface::ReadCommand()
 std::string Interface::ReadString()
 {
     std::string buff;
-    std::cout << "---------------------------- \n";
-    std::cout << "Format: 'a/b/c/.../file.txt' \n";
-    std::cout << "Enter File Path: ";
     getline(std::cin, buff);
-
     return buff;
 }
 
@@ -86,7 +89,9 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
             case 1:
                 if (fileCounter < MAX_FILES)
                 {
+                    Interface::FilePathPrompt();
                     openedFiles[fileCounter] = (*IVFS_handler)->Open(Interface::ReadString().c_str());
+
                     if (openedFiles[fileCounter] != nullptr)
                         fileCounter++;
                 }
@@ -97,7 +102,9 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
             case 2:
                 if (fileCounter < MAX_FILES)
                 {
+                    Interface::FilePathPrompt();
                     openedFiles[fileCounter] = (*IVFS_handler)->Create(Interface::ReadString().c_str());
+                    
                     if (openedFiles[fileCounter] != nullptr)
                         fileCounter++;
                 }
@@ -126,8 +133,9 @@ void Interface::mainCycle(TestTask::IVFS **IVFS_handler)
                 {
                     // ??? Я не знаю к чему тут буфер и его(?) размер
                     char buff[255];
-                    size_t readBytes;
-                    (*IVFS_handler)->Write(Interface::ChooseFile(openedFiles, fileCounter), buff, readBytes);
+                    size_t writeBytes;
+                    writeBytes = (*IVFS_handler)->Write(Interface::ChooseFile(openedFiles, fileCounter), buff, writeBytes);
+                    std::cout << "Wrote bytes: " << writeBytes << "\n";
                     //delete buff;
                 }
                 else
