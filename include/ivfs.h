@@ -5,27 +5,40 @@
 #include <filesystem>
 #include <string.h>
 
-#define MAX_FILES 10 // Одновременно открытых
-#define MAX_BUFFER 255 // Для чтения/записи данных
+// Ограничение на макс. количество открытых файлов
+#define MAX_FILES 20
+
+// Для чтения/записи данных 
+#define MAX_BUFFER 255 
+
 #define WRITEONLY 0
 #define READONLY 1
 
-namespace TestTask
+namespace _IVFS
 {
-    // Вы имеете право как угодно задать содержимое этой структуры 
+    // Описывает структуру открытого файла
     struct File
     {
-        std::fstream fileHook; // Доступ к файлу
-        int fileMode; // Режим доступа к файлу 
+        // Поток доступа к файлу
+        std::fstream *fileHook;
+        
+        // Режим доступа к файлу (readonly/writeonly)
+        int fileMode; 
 
-        char* filePath;
+        // Путь к файлу
+        char *filePath;
 
-        File(){};
-        File(const char *filePath, std::ios_base::openmode openMode);
+        File(const char *name, std::ios_base::openmode openMode);
+        ~File();
     };
 
+    // Интерфейс для работы с файлами
     struct IVFS
     {
+        // Используется для отслеживания открытых файлов и доступа к ним
+        File **openedFiles;
+        int fileCounter = 0;
+
         // Открыть файл в readonly режиме. Если нет такого файла или же он открыт во writeonly режиме - вернуть nullptr
         File *Open( const char *name ); 
         
@@ -41,8 +54,10 @@ namespace TestTask
         
         // Закрыть файл
         void Close( File *f ); 
+
+        IVFS();
+        ~IVFS();
     };
 }
-
 
 #endif

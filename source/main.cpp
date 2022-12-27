@@ -1,14 +1,11 @@
-#include "../includes/ivfs.h"
-#include "../includes/ui.h"
+#include "../include/ivfs.h"
+#include "../include/thread.h"
 
 int main()
 {
-    TestTask::IVFS* IVFS_handler = new TestTask::IVFS;
+    _IVFS::IVFS *IVFS_Handler = new _IVFS::IVFS();
 
-    Interface::mainCycle(&IVFS_handler);
+    Multithread::MainLoop(IVFS_Handler);
 
-    delete IVFS_handler;
-    std::cout << "IVFS Handler deleted\n";
-    
     return 0;
 }
