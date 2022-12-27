@@ -114,6 +114,8 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
                         size_t writeBytes;
                         writeBytes = IVFS_Handler->Write(*writingFile, buff, len);
 
+                        delete buff;
+
                         Multithread::threadReport(request->filename, "writing", true, writeBytes);
 
                         writingFile = nullptr;
