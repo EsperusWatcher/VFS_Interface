@@ -12,11 +12,7 @@
 
 namespace Multithread
 {
-    // Контролирует работу потоков, предотвращает одновременный доступ к одним файлам
-    struct Control
-    {
-        std::mutex mutex;
-    };
+    std::mutex printLock;
 
     struct Threads
     {
@@ -26,9 +22,9 @@ namespace Multithread
         std::fstream threadCommandsHook;
     };
     
-    void ThreadCycle(_IVFS::IVFS *IVFS_handler, Multithread::Control *threadControl, int threadNum);
+    void ThreadCycle(_IVFS::IVFS *IVFS_handler);
     void MainLoop(_IVFS::IVFS *IVFS_Handler);
-
+    void threadReport(const char *filename, const char *action, bool ioOperation = false, int result = 0);
 }
 
 #endif

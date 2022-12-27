@@ -48,7 +48,7 @@ int main()
                 {
                     PrintFileList(IVFS_Handler);
                     std::cout << "Enter file name to read: ";
-                    size_t readBytes = IVFS_Handler->Read(*FileSystemSim::ChooseFileByName(IVFS_Handler, ReadString().c_str()), buff, buff_size);
+                    size_t readBytes = IVFS_Handler->Read(*FileSystemSim::GetFileByName(IVFS_Handler, ReadString().c_str()), buff, buff_size);
                     std::cout << "Read bytes: " << readBytes << "\n";
                 }
                 else
@@ -68,7 +68,7 @@ int main()
 
                     PrintFileList(IVFS_Handler);
                     std::cout << "Enter destination name: ";
-                    size_t wroteBytes = IVFS_Handler->Write(*FileSystemSim::ChooseFileByName(IVFS_Handler, ReadString().c_str()), buff, buff_size);
+                    size_t wroteBytes = IVFS_Handler->Write(*FileSystemSim::GetFileByName(IVFS_Handler, ReadString().c_str()), buff, buff_size);
                     std::cout << "Wrote bytes: " << wroteBytes << "\n";
                 }
                 else
@@ -83,7 +83,7 @@ int main()
                     // Указатель на закрываемый файл передается в переменную
                     PrintFileList(IVFS_Handler);
                     std::cout << "Enter file name to close: ";
-                    IVFS_Handler->Close(*FileSystemSim::ChooseFileByName(IVFS_Handler, ReadString().c_str()));
+                    IVFS_Handler->Close(*FileSystemSim::GetFileByName(IVFS_Handler, ReadString().c_str()));
                 }
                 else
                     std::cout << "No opened files\n";
@@ -169,12 +169,6 @@ std::string ReadString()
 // ну не совсем
 void UnitTests(_IVFS::IVFS *IVFS_Handler)
 {
-    char buff2[MAX_BUFFER];
-    size_t len2 = MAX_BUFFER;
-    *FileSystemSim::FindEmptySlot(IVFS_Handler) = IVFS_Handler->Open("data/more/more_2.txt");
-    std::cout << IVFS_Handler->Read(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/more/more_2.txt"), buff2, len2) << " bytes\n";
-    std::cout << IVFS_Handler->Read(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/more/more_2.txt"), buff2, len2) << " bytes\n";
-
     // Тест на открытие файла
     std::cout << "---------------------1-----------------------\n";
     std::cout << "Opening: data/data_1.txt | readonly\n";
@@ -193,7 +187,7 @@ void UnitTests(_IVFS::IVFS *IVFS_Handler)
     std::cout << "---------------------3-----------------------\n";
     std::cout << "Writing 'hello' to data/data_1.txt\n";
     std::cout << "Expecting: 0 bytes (file in readonly)\n";
-    std::cout << "Result: " << (IVFS_Handler)->Write(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/data_1.txt"), "hello", 5) << " bytes\n";
+    std::cout << "Result: " << (IVFS_Handler)->Write(*FileSystemSim::GetFileByName(IVFS_Handler, "data/data_1.txt"), "hello", 5) << " bytes\n";
     
     // Тест на создание директорий, открытие файла во writeonly
     std::cout << "---------------------4-----------------------\n";
@@ -207,20 +201,20 @@ void UnitTests(_IVFS::IVFS *IVFS_Handler)
     std::cout << "Closing: data/data_1.txt\n";
     std::cout << "Expecting: closed\n";
     std::cout << "Result: ";
-    IVFS_Handler->Close(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/data_1.txt"));
+    IVFS_Handler->Close(*FileSystemSim::GetFileByName(IVFS_Handler, "data/data_1.txt"));
 
     // Тест на запись чего-нибудь в файл (а также на функцию сортировки открытых файлов)
     std::cout << "---------------------6-----------------------\n";
     std::cout << "Writing 'hello' to data/more/more_1.txt\n";
     std::cout << "Expecting: 5 bytes\n";
-    std::cout << "Result: " << IVFS_Handler->Write(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/more/more_1.txt"), "hello", 5) << " bytes\n";
+    std::cout << "Result: " << IVFS_Handler->Write(*FileSystemSim::GetFileByName(IVFS_Handler, "data/more/more_1.txt"), "hello", 5) << " bytes\n";
 
     // Еще один тест на закрытие
     std::cout << "---------------------7-----------------------\n";
     std::cout << "Closing data/more/more_1.txt\n";
     std::cout << "Expecting: closed\n";
     std::cout << "Result: ";
-    IVFS_Handler->Close(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/more/more_1.txt"));
+    IVFS_Handler->Close(*FileSystemSim::GetFileByName(IVFS_Handler, "data/more/more_1.txt"));
 
     std::cout << "---------------------8-----------------------\n";
     std::cout << "Opening data/more/more_1.txt\n";
@@ -233,7 +227,7 @@ void UnitTests(_IVFS::IVFS *IVFS_Handler)
     std::cout << "---------------------9-----------------------\n";
     std::cout << "Reading from data/more/more_1.txt\n";
     std::cout << "Expecting: 5 bytes\n";
-    std::cout << "Result: " << IVFS_Handler->Read(*FileSystemSim::ChooseFileByName(IVFS_Handler, "data/more/more_1.txt"), buff, MAX_BUFFER) << " bytes\n";
+    std::cout << "Result: " << IVFS_Handler->Read(*FileSystemSim::GetFileByName(IVFS_Handler, "data/more/more_1.txt"), buff, MAX_BUFFER) << " bytes\n";
 
     // Тест на попытку открыть readonly файл во writeonly 
     std::cout << "---------------------10----------------------\n";

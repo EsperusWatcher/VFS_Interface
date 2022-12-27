@@ -3,6 +3,8 @@
 // Для ручного тестирования функций (test.cpp)
 #define INFO_MSG true
 
+#define TESTING_ONLY true
+
 #if (INFO_MSG == true)
 #include <iostream>
 #endif

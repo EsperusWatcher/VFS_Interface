@@ -17,7 +17,7 @@ _IVFS::File **FileSystemSim::FindEmptySlot(_IVFS::IVFS *IVFS_Handler)
 
 // Используется для нахождения файла по его имени (для чтения/записи)
 // Поиск осуществляется в массиве открытых файлов
-_IVFS::File **FileSystemSim::ChooseFileByName(_IVFS::IVFS *IVFS_Handler, const char *name)
+_IVFS::File **FileSystemSim::GetFileByName(_IVFS::IVFS *IVFS_Handler, const char *name)
 {
     bool fileChosen = false;
     int chosenIndex;
@@ -40,4 +40,16 @@ _IVFS::File **FileSystemSim::ChooseFileByName(_IVFS::IVFS *IVFS_Handler, const c
         std::cout << "file not found\n";
         return nullptr;
     }
+}
+
+bool FileSystemSim::CheckIfFileIsOpened(_IVFS::IVFS *IVFS_Handler, const char *name)
+{
+    for (int i = 0; i < MAX_FILES; i++)
+    {
+        if (IVFS_Handler->openedFiles[i] != nullptr)
+            if(strcmp(IVFS_Handler->openedFiles[i]->filePath, name) == 0)
+                return true;
+    }
+
+    return false;
 }

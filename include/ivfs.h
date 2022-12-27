@@ -4,6 +4,8 @@
 #include <fstream>
 #include <filesystem>
 #include <string.h>
+#include <mutex>
+#include <shared_mutex>
 
 // Ограничение на макс. количество открытых файлов
 #define MAX_FILES 20
@@ -27,6 +29,8 @@ namespace _IVFS
 
         // Путь к файлу
         char *filePath;
+
+        std::shared_mutex fileLock;
 
         File(const char *name, std::ios_base::openmode openMode);
         ~File();
