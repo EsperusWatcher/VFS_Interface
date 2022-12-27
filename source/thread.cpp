@@ -54,20 +54,24 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
                 case OPEN:
                 {
                     // Файлы могут открываться одновременно, но на это время приостанавливаются команды над ними
-                    std::shared_lock<std::shared_mutex> reading(fileRequestControl->openingLock);
+                    std::shared_lock<std::shared_mutex> opening(fileRequestControl->openingLock);
+
                     Multithread::threadReport(request->filename, "opening");
 
                     *FileSystemSim::FindEmptySlot(IVFS_Handler) = IVFS_Handler->Open(request->filename);
+                    
                     requestCompleted = true;
                 }
                 break;
 
                 case CREATE:
                 {
-                    std::shared_lock<std::shared_mutex> reading(fileRequestControl->openingLock);
+                    std::shared_lock<std::shared_mutex> creating(fileRequestControl->openingLock);
+
                     Multithread::threadReport(request->filename, "creating");
 
                     *FileSystemSim::FindEmptySlot(IVFS_Handler) = IVFS_Handler->Create(request->filename);
+                    
                     requestCompleted = true;
                 }
                 break;

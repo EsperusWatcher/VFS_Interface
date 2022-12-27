@@ -54,16 +54,18 @@ _IVFS::File *_IVFS::IVFS::Open( const char *name )
 {
     for (int i = 0; i < MAX_FILES; i++)
     {
-        if (this->openedFiles[i] != nullptr)
-            if (strcmp(this->openedFiles[i]->filePath, name) == 0)
-                if (this->openedFiles[i]->fileMode == WRITEONLY)
-                {
-                    #if (INFO_MSG == true)
-                    std::cout << "File already opened in Writeonly mode\n";
-                    #endif
-                    
-                    return nullptr;
-                }
+        if (this->openedFiles[i] == nullptr)
+            continue;
+
+        if (strcmp(this->openedFiles[i]->filePath, name) == 0)
+            if (this->openedFiles[i]->fileMode == WRITEONLY)
+            {
+                #if (INFO_MSG == true)
+                std::cout << "File already opened in Writeonly mode\n";
+                #endif
+                
+                return nullptr;
+            }
     }
 
     std::fstream checkHook(name);
@@ -97,16 +99,18 @@ _IVFS::File *_IVFS::IVFS::Create( const char *name )
     // Проверяет, не открыт ли уже такой файл в readonly режиме
     for (int i = 0; i < MAX_FILES; i++)
     {
-        if (this->openedFiles[i] != nullptr)
-            if (strcmp(this->openedFiles[i]->filePath, name) == 0)
-                if (this->openedFiles[i]->fileMode == READONLY)
-                {
-                    #if (INFO_MSG == true)
-                    std::cout << "File already opened in Writeonly mode\n";
-                    #endif
-                    
-                    return nullptr;
-                }
+        if (this->openedFiles[i] == nullptr)
+            continue;
+            
+        if (strcmp(this->openedFiles[i]->filePath, name) == 0)
+            if (this->openedFiles[i]->fileMode == READONLY)
+            {
+                #if (INFO_MSG == true)
+                std::cout << "File already opened in Writeonly mode\n";
+                #endif
+                
+                return nullptr;
+            }
     }
 
     // Определяет, есть ли в пути поддиректории
