@@ -30,8 +30,6 @@ namespace _IVFS
         // Путь к файлу
         char *filePath;
 
-        std::shared_mutex fileLock;
-
         File(const char *name, std::ios_base::openmode openMode);
         ~File();
     };

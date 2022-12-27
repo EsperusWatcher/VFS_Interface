@@ -1,9 +1,7 @@
 #include "../include/ivfs.h"
 
 // Для ручного тестирования функций (test.cpp)
-#define INFO_MSG true
-
-#define TESTING_ONLY true
+#define INFO_MSG false
 
 #if (INFO_MSG == true)
 #include <iostream>

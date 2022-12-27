@@ -1,4 +1,4 @@
-#include "../include/filesystem.h"
+#include "../include/filesystemsim.h"
 
 // Вызывается при открытии/создании файла, находит в массиве для открытых файлов
 // свободный слот и передает его для получения файла
@@ -42,6 +42,7 @@ _IVFS::File **FileSystemSim::GetFileByName(_IVFS::IVFS *IVFS_Handler, const char
     }
 }
 
+// Проверяет, открыт ли файл
 bool FileSystemSim::CheckIfFileIsOpened(_IVFS::IVFS *IVFS_Handler, const char *name)
 {
     for (int i = 0; i < MAX_FILES; i++)
@@ -52,4 +53,9 @@ bool FileSystemSim::CheckIfFileIsOpened(_IVFS::IVFS *IVFS_Handler, const char *n
     }
 
     return false;
+}
+
+FileSystemSim::Control::Control()
+{
+    this->requestPool.open("settings/commands.txt", std::ios::in);
 }

@@ -4,25 +4,27 @@
 #include <thread>
 #include <mutex>
 #include "ivfs.h"
+#include "filesystemsim.h"
 
-// Увеличение количества используемых потоков
-// Потребует создания новых файлов с командами
-// в files/thread_settings/
+// Изменение количества используемых потоков (но лучше не надо)
 #define NUM_THREADS 2
+
+// Для корректного вывода данных в консоль
+std::mutex printLock;
 
 namespace Multithread
 {
-    std::mutex printLock;
-
-    struct Threads
+    struct Request
     {
-        std::thread thread;
+        int command;
+        const char *filename;
+        std::string writeData;
 
-        // Для чтения команд из соотв. потоку файла
-        std::fstream threadCommandsHook;
+        std::mutex requestLock;
     };
-    
-    void ThreadCycle(_IVFS::IVFS *IVFS_handler);
+
+    void ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control *fileRequestControl);
+    void TranslateRequest(Request *request, std::string parser, std::string rawCommand);
     void MainLoop(_IVFS::IVFS *IVFS_Handler);
     void threadReport(const char *filename, const char *action, bool ioOperation = false, int result = 0);
 }
