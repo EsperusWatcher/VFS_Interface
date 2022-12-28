@@ -149,7 +149,7 @@ size_t _IVFS::IVFS::Write( File *f, char *buff, size_t len )
 
     f->fileHook->write(buff, len);
 
-    return strlen(buff);
+    return len;
 }
 
 // Закрытие файла
