@@ -105,7 +105,6 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
                 {
                     if (FileSystemSim::CheckIfFileIsOpened(IVFS_Handler, request->filename))
                     {
-
                         _IVFS::File **writingFile = FileSystemSim::GetFileByName(IVFS_Handler, request->filename);
 
                         char *buff = new char[request->writeData.length()];
@@ -131,11 +130,8 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
                 case CLOSE:
                 {
-                    // Если файл открывается, то ждет
-                    std::unique_lock<std::shared_mutex> closing(fileRequestControl->openingLock);
                     if (FileSystemSim::CheckIfFileIsOpened(IVFS_Handler, request->filename))
                     {
-                        fileRequestControl->openingLock.unlock();
                         _IVFS::File **closingFile = FileSystemSim::GetFileByName(IVFS_Handler, request->filename);
 
                         fileRequestControl->printLock.lock();
