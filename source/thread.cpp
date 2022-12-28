@@ -160,7 +160,6 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 // Выведение различной информации о действиях потоков на экран
 void Multithread::threadReport(const char *filename, const char *action, bool ioOperation, int result)
 {
-    // Не позволяет потокам выводить данные одновременно
     std::cout << "Thread |" << std::this_thread::get_id() << "| " << action << " " << filename;
     // Для вывода в консоль при чтении/записи в файл
     if (ioOperation)
