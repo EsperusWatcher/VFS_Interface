@@ -45,8 +45,8 @@
 5!data/data_2.txt
 2!data/more/more_1.txt
 4!data/more/more_1.txt!Very important text
-2!data/more/more_2.txt
 5!data/more/more_1.txt
+2!data/more/more_2.txt
 4!data/more/more_2.txt!Very important text as well
 5!data/more/more_2.txt
 2!data/data_1.txt

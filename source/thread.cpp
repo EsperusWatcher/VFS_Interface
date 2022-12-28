@@ -32,7 +32,7 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
     // Строка из файла с командами
     std::string rawCommandData;
-    // Используется для переработки строки выше в структуру ниже
+    // Используется для переработки строки с командой в структуру request
     std::string parser;
 
     Multithread::Request *request = new Multithread::Request();
@@ -43,8 +43,8 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
         Multithread::TranslateRequest(request, parser, rawCommandData);
 
         // Для избежания выполнения команды до открытия файла (при одновременном получении команд потоками)
-        // Если поток не нахожит открытый файл, то зацикливается пока тот не откроется
-        // Не оптимально, но работает....
+        // Не оптимально, но на другое решение нет времени, этот вариант позволяет работать с двумя потоками
+        // при корректно заданных командах (имеющих смысл), иначе поток замкнется в цикле, ожидая файл
         bool requestCompleted = false;
 
         while (!requestCompleted)
@@ -53,10 +53,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
             {
                 case OPEN:
                 {
-                    // Файлы могут открываться одновременно, но на это время приостанавливаются команды над ними
-                    std::shared_lock<std::shared_mutex> opening(fileRequestControl->openingLock);
-
+                    fileRequestControl->printLock.lock();
                     Multithread::threadReport(request->filename, "opening");
+                    fileRequestControl->printLock.unlock();
 
                     *FileSystemSim::FindEmptySlot(IVFS_Handler) = IVFS_Handler->Open(request->filename);
                     
@@ -66,9 +65,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
                 case CREATE:
                 {
-                    std::shared_lock<std::shared_mutex> creating(fileRequestControl->openingLock);
-
+                    fileRequestControl->printLock.lock();
                     Multithread::threadReport(request->filename, "creating");
+                    fileRequestControl->printLock.unlock();
 
                     *FileSystemSim::FindEmptySlot(IVFS_Handler) = IVFS_Handler->Create(request->filename);
                     
@@ -78,11 +77,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
                 case READ:
                 {
-                    // Если файл открывается, то ждет
-                    std::shared_lock<std::shared_mutex> reading(fileRequestControl->openingLock);
                     if (FileSystemSim::CheckIfFileIsOpened(IVFS_Handler, request->filename))
                     {
-
+                        // Читает данные из файла кусками размера MAX_BUFFER
                         char buff[MAX_BUFFER];
 
                         // Получает ссылку на файл для чтения (хранится во временной переменной)
@@ -91,7 +88,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
                         size_t readBytes;
                         readBytes = IVFS_Handler->Read((*readingFile), buff, MAX_BUFFER);
 
+                        fileRequestControl->printLock.lock();
                         Multithread::threadReport(request->filename, "reading", true, readBytes);
+                        fileRequestControl->printLock.unlock();
 
                         readingFile = nullptr;
                         requestCompleted = true;
@@ -104,8 +103,6 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
                 case WRITE:
                 {
-                    // Если файл открывается, то ждет
-                    std::unique_lock<std::shared_mutex> writing(fileRequestControl->openingLock);
                     if (FileSystemSim::CheckIfFileIsOpened(IVFS_Handler, request->filename))
                     {
 
@@ -120,7 +117,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 
                         delete buff;
 
+                        fileRequestControl->printLock.lock();
                         Multithread::threadReport(request->filename, "writing", true, writeBytes);
+                        fileRequestControl->printLock.unlock();
 
                         writingFile = nullptr;
                         requestCompleted = true;
@@ -139,7 +138,9 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
                         fileRequestControl->openingLock.unlock();
                         _IVFS::File **closingFile = FileSystemSim::GetFileByName(IVFS_Handler, request->filename);
 
+                        fileRequestControl->printLock.lock();
                         Multithread::threadReport(request->filename, "closing");
+                        fileRequestControl->printLock.unlock();
 
                         IVFS_Handler->Close(*closingFile);
 
@@ -164,14 +165,12 @@ void Multithread::ThreadCycle(_IVFS::IVFS *IVFS_Handler, FileSystemSim::Control 
 void Multithread::threadReport(const char *filename, const char *action, bool ioOperation, int result)
 {
     // Не позволяет потокам выводить данные одновременно
-    printLock.lock();
     std::cout << "Thread |" << std::this_thread::get_id() << "| " << action << " " << filename;
     // Для вывода в консоль при чтении/записи в файл
     if (ioOperation)
         std::cout << " | Result: " << result << " bytes\n";
     else
         std::cout << "\n";
-    printLock.unlock();
 }
 
 // Переводит считанную строку из файла к виду структуры request

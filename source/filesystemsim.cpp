@@ -24,32 +24,33 @@ _IVFS::File **FileSystemSim::GetFileByName(_IVFS::IVFS *IVFS_Handler, const char
 
     for (int i = 0; i < MAX_FILES; i++)
     {
-        if (IVFS_Handler->openedFiles[i] != nullptr)
-            if(strcmp(IVFS_Handler->openedFiles[i]->filePath, name) == 0)
-            {
-                fileChosen = true;
-                chosenIndex = i;
-                break;
-            }
+        if (IVFS_Handler->openedFiles[i] == nullptr)
+            continue;
+
+        if(strcmp(IVFS_Handler->openedFiles[i]->filePath, name) == 0)
+        {
+            fileChosen = true;
+            chosenIndex = i;
+            break;
+        }
     }
 
     if (fileChosen)
         return &IVFS_Handler->openedFiles[chosenIndex];
     else
-    {
-        std::cout << "file not found\n";
         return nullptr;
-    }
 }
 
-// Проверяет, открыт ли файл
+// Проверяет, открыт ли файл с таким именем
 bool FileSystemSim::CheckIfFileIsOpened(_IVFS::IVFS *IVFS_Handler, const char *name)
 {
     for (int i = 0; i < MAX_FILES; i++)
     {
-        if (IVFS_Handler->openedFiles[i] != nullptr)
-            if(strcmp(IVFS_Handler->openedFiles[i]->filePath, name) == 0)
-                return true;
+        if (IVFS_Handler->openedFiles[i] == nullptr)
+            continue;
+
+        if(strcmp(IVFS_Handler->openedFiles[i]->filePath, name) == 0)
+            return true;
     }
 
     return false;

@@ -9,9 +9,6 @@
 // Изменение количества используемых потоков (но лучше не надо)
 #define NUM_THREADS 2
 
-// Для корректного вывода данных в консоль
-std::mutex printLock;
-
 namespace Multithread
 {
     struct Request

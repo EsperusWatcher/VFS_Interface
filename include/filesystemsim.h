@@ -4,7 +4,7 @@
 #include <iostream>
 #include "ivfs.h"
 
-// Для красоты
+// Для красоты (Соответствующие команды в файле с командами задаются этими числами)
 #define OPEN 1
 #define CREATE 2
 #define READ 3
@@ -13,12 +13,14 @@
 
 namespace FileSystemSim
 {
+    // Открывает файл с командами для потоков
     struct Control
     {
         std::fstream requestPool;
 
-        std::shared_mutex openingLock;
+        std::mutex printLock;
         std::mutex operationLock;
+        std::shared_mutex openingLock;
 
         Control();
     };

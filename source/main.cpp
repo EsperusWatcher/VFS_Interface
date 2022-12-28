@@ -7,5 +7,6 @@ int main()
 
     Multithread::MainLoop(IVFS_Handler);
 
+    std::cout << "done\n";
     return 0;
 }

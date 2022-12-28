@@ -1,4 +1,4 @@
-#include "../include/filesystem.h"
+#include "../include/filesystemsim.h"
 #include "../include/ivfs.h"
 #include "../include/test.h"
 
@@ -111,7 +111,6 @@ int main()
             IVFS_Handler->Close(IVFS_Handler->openedFiles[i]);
     }
 
-    std::cout << "done\n";
     delete IVFS_Handler;
 }
 

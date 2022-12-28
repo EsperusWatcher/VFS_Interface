@@ -1,12 +1,6 @@
 #include "../include/ivfs.h"
 
-// Для ручного тестирования функций (test.cpp)
-#define INFO_MSG false
-
-#if (INFO_MSG == true)
-#include <iostream>
-#endif
-
+// Используется для инициализации массива открытых файлов
 _IVFS::IVFS::IVFS()
 {
     this->openedFiles = new _IVFS::File*[MAX_FILES]();
@@ -28,18 +22,12 @@ _IVFS::IVFS::~IVFS()
 _IVFS::File::File(const char *name, std::ios_base::openmode openMode)
 {
     this->fileMode = (openMode == std::ios_base::in ? READONLY : WRITEONLY);
-
     this->filePath = new char[strlen(name)]();
-
     this->fileHook = new std::fstream;
 
     strcpy(this->filePath, name);
 
     this->fileHook->open(this->filePath, openMode);
-
-    #if (INFO_MSG == true)
-    std::cout << "File: " << this->filePath << " | Opened\n";
-    #endif
 }
 
 _IVFS::File::~File()
@@ -59,13 +47,7 @@ _IVFS::File *_IVFS::IVFS::Open( const char *name )
 
         if (strcmp(this->openedFiles[i]->filePath, name) == 0)
             if (this->openedFiles[i]->fileMode == WRITEONLY)
-            {
-                #if (INFO_MSG == true)
-                std::cout << "File already opened in Writeonly mode\n";
-                #endif
-                
                 return nullptr;
-            }
     }
 
     std::fstream checkHook(name);
@@ -73,23 +55,13 @@ _IVFS::File *_IVFS::IVFS::Open( const char *name )
     // Файл существует
     if (checkHook)
     {
-        #if (INFO_MSG == true)
-        std::cout << "File found\n";
-        #endif
-
         // Открыт новый файл
         this->fileCounter++;
 
         return new _IVFS::File(name, std::ios_base::in);
     }
     else
-    {
-        #if (INFO_MSG == true)
-        std::cout << "File does not exist\n";
-        #endif
-
         return nullptr;
-    }
 } 
 
 // Открыть или создать файл в writeonly режиме. Если нужно, то создать все нужные поддиректории, упомянутые в пути. 
@@ -101,16 +73,10 @@ _IVFS::File *_IVFS::IVFS::Create( const char *name )
     {
         if (this->openedFiles[i] == nullptr)
             continue;
-            
+
         if (strcmp(this->openedFiles[i]->filePath, name) == 0)
             if (this->openedFiles[i]->fileMode == READONLY)
-            {
-                #if (INFO_MSG == true)
-                std::cout << "File already opened in Writeonly mode\n";
-                #endif
-                
                 return nullptr;
-            }
     }
 
     // Определяет, есть ли в пути поддиректории
@@ -140,10 +106,6 @@ _IVFS::File *_IVFS::IVFS::Create( const char *name )
         strncpy(pathToCreate, name, strlen(name) - counter);
         pathToCreate[strlen(name) - counter] = '\0';
 
-        #if (INFO_MSG == true)
-        std::cout << "Creating path: " << pathToCreate << "\n";
-        #endif
-
         std::filesystem::create_directories(pathToCreate);
         
         delete pathToCreate;
@@ -155,20 +117,15 @@ _IVFS::File *_IVFS::IVFS::Create( const char *name )
 }
 
 // Прочитать данные из файла. Возвращаемое значение - сколько реально байт удалось прочитать
+// На самом деле ничего не читает, для этого нет функционала, просто считает их
 size_t _IVFS::IVFS::Read( _IVFS::File *f, char *buff, size_t len )
 {
     if (f->fileMode == WRITEONLY)
-    {
-        #if (INFO_MSG == true)
-        std::cout << "This file is in writeonly mode\n";
-        #endif
-
         return 0;
-    }
 
     std::size_t totalBytes = 0;
 
-    // Считывает файл кусками под размер буфера
+    // Данные читаются (считаются) кусками под размер буфера
     do
     {
         f->fileHook->read(buff, len);
@@ -188,13 +145,7 @@ size_t _IVFS::IVFS::Read( _IVFS::File *f, char *buff, size_t len )
 size_t _IVFS::IVFS::Write( File *f, char *buff, size_t len )
 {
     if (f->fileMode == READONLY)
-    {
-        #if (INFO_MSG == true)
-        std::cout << "This file is in readonly mode\n";
-        #endif
-
         return 0;
-    }
 
     f->fileHook->write(buff, len);
 
@@ -206,10 +157,6 @@ void _IVFS::IVFS::Close( File *f )
 {
     f->fileHook->close();
     
-    #if (INFO_MSG == true)
-    std::cout << "File " << f->filePath << " | Closed\n";
-    #endif
-    
     delete f;
 
     // Помечает слот для открытия файлов как свободный
@@ -218,8 +165,4 @@ void _IVFS::IVFS::Close( File *f )
             this->openedFiles[i] = nullptr;
 
     this->fileCounter--;
-
-    #if (INFO_MSG == true)
-    std::cout << "Memory cleared\n";
-    #endif
 }
